@@ -69,25 +69,37 @@ title: "CMUI 之 Stylus 编码规范（草案）"
 
 #### 字符集 <a name="file-system--charset">&nbsp;</a>
 
-所有 Stylus 文件一律采用 UTF-8 字符集。
+所有 Stylus 文件一律采用 UTF-8 字符集，文件无 BOM 头。
 
-所有 Stylus 文件内部一律不标记 `@charset`。如果页面本身没有采用 UTF-8 字符集，则在引用样式时需要在 `<link>` 标签上注明字符集。
+所有 Stylus 文件内部一律不标记 `@charset`。如果页面本身没有采用 UTF-8 字符集，则在引用样式文件时需要在 `<link>` 标签上注明字符集：
 
-#### 模块 <a name="file-system--module">&nbsp;</a>
+```html
+<link rel="stylesheet" href="cmui.css" charset="utf-8">
+```
+
+#### 文件命名 <a name="file-system--filename">&nbsp;</a>
+
+Stylus 文件的扩展名为 `.styl`。
+
+文件名由小写英文字母和数字组成，且必须以英文字母开头；单词之间以连字符分隔。比如 `text-style.styl`。
+
+## 模块 <a name="module">&nbsp;</a>
+
+#### 模块的组织 <a name="module--org">&nbsp;</a>
 
 与 JavaScript 模块类似，每个样式模块对应一个物理文件。模块**必须**以 mixin 的方式组织，而不是以代码片断的方式组织。比如：
 
 ```stylus
+// [module.styl]
 // GOOD
-// module.styl
 my-mixin()
 	color red
 	border 1px solid
 ```
 
 ```stylus
+// [module.styl]
 // BAD
-// module.styl
 #wrapper
 	color red
 	border 1px solid
@@ -96,7 +108,7 @@ my-mixin()
 这意味着在导入模块之后，需要手动调用模块中的 mixin。比如，模块的内容是这样的：
 
 ```stylus
-// module.styl
+// [module.styl]
 my-mixin()
 	color red
 	border 1px solid
@@ -105,17 +117,17 @@ my-mixin()
 而入口文件是这样调用模块的：
 
 ```stylus
-// entry.styl
+// [entry.styl]
 @import './module'
 
 #wrapper
 	my-mixin()
 ```
 
-或这样的（推荐）：
+或这样的（推荐这种方式，因为这会将模块内的 mixin 导入到局部作用域，可以有效避免同名 mixin 可能引起的冲突）：
 
 ```stylus
-// entry.styl
+// [entry.styl]
 #wrapper
 	@import './module'
 	my-mixin()
@@ -123,21 +135,41 @@ my-mixin()
 
 每个模块可包含一个或多个 mixin，建议只包含一个。不相关的多个 mixin 不应组织到同一个模块中。
 
-#### 文件命名 <a name="file-system--filename">&nbsp;</a>
+#### 模块的导入 <a name="module--import">&nbsp;</a>
 
-文件名必须为全小写，扩展名为 `.styl`。
+仅使用 `@import` 来导入模块，不使用 `@require`。
 
-入口文件的文件名建议与所在页面的功能（或 URL）相同或相近，比如首页的样式入口文件取名为 `home.styl`，用户中心各页面的样式入口文件取名为 `wo_*.styl`。
+模块的路径与文件名需要用引号包住。文件路径总是以 `./` 开头，文件名不需要包含 `.styl` 扩展名：
 
-如果模块文件只包含一个 mixin 的话，模块的文件名建议取其包含的 mixin 的名字，以增强文件名的可读性。
+```stylus
+@import './modules/ui/index'
+```
+
 
 ## 代码风格 <a name="code-style">&nbsp;</a>
 
 #### 基本风格 <a name="code-style--basic">&nbsp;</a>
 
-* 声明结尾无分号（这意味着所有每条声明均独立一行）
-* 属性名与属性值之间无冒号，只留一个空格
-* 代码块（声明块和其它代码块）无花括号，一律采用缩进来表示层级关系
+大小写：
+
+* 所有类型选择符一律小写。
+* 所有属性名和关键字一律小写。
+
+```stylus
+// GOOD
+div, p, a
+	color red
+
+// BAD
+DIV, P, A
+	COLOR RED
+```
+
+代码块：
+
+* 每条声明独占一行，行尾不写分号。
+* 属性名与属性值之间无冒号，只留一个空格。
+* 声明块（以及其它代码块）采用无花括号的风格，一律采用缩进来表示层级关系。
 
 ```stylus
 // GOOD
@@ -157,6 +189,8 @@ div {
 
 #### 空白符 <a name="code-style--whitespace">&nbsp;</a>
 
+常规设置：
+
 * 换行符采用 `LF`。
 * 缩进采用一个 tab。
 
@@ -174,20 +208,43 @@ my-mixin(arg)
 my-mixin ( arg )
 ```
 
-减号与变量、数值、函数、mixin 之间需要用空格间隔，以便于连字符区分；取负运算符同理。在取负值时，最好将取负的部分用括号括起来：
+* 减号的两侧需要用空格间隔，以便与连字符区分（取负运算符同理）：
 
 ```stylus
 #wrapper
 	$size = 100px
-	margin-left -$size * 0.5  // ERROR
-	margin-left - $size * 0.5  // OK
-	margin-left -($size * 0.5)  // GOOD
+	margin-left $size-10  // ERROR
+	margin-left ($size - 10)  // GOOD
+```
+
+#### 括号 <a name="code-style--parenthesis">&nbsp;</a>
+
+在需要传入一个值的地方使用表达式时，需要把表达式用括号括起来：
+
+```stylus
+#wrapper
+	$size = 100px
+	margin-left - $size * 0.5  // BAD
 	margin-left (- $size * 0.5)  // GOOD
+	
+	padding-left $size / 0.5  // BAD
+	padding-left ($size / 0.5)  // GOOD
 ```
 
 #### 其它字符 <a name="code-style--other-char">&nbsp;</a>
 
-* 引号一律使用单引号。
+引号一律使用单引号。
+
+写在 `url()` 函数内的 URL 是不需要包一层引号的：
+
+```stylus
+// GOOD
+background-image url(http://file.baixing.net/logo.png)
+
+// BAD
+background-image url('http://file.baixing.net/logo.png')
+```
+
 
 ## 选择符 <a name="selector">&nbsp;</a>
 
@@ -229,22 +286,6 @@ div
 
 #### 群组选择符 <a name="selector--group">&nbsp;</a>
 
-群组选择符建议分行写。当分行时，群组内的多个选择符之间通常可以省略逗号。
-
-```stylus
-// GOOD
-div
-	p.warning,
-	h3.highlight
-		color red
-
-// OK
-div
-	p.warning
-	h3.highlight
-		color red
-```
-
 单纯由类型选择符所构成的群组选择符可以写在一行；但复杂的群组选择符必须分行：
 
 ```stylus
@@ -259,50 +300,49 @@ div
 		color red
 ```
 
-**注意**：当分行的群组选择符与属性声明（或表达式）之间产生歧义时，不可省略分号，以免产生意外的解析结果（或解析错误）：
+当分行时，群组内的多个选择符之间建议总是写上逗号：
 
 ```stylus
 // GOOD
 div
-	foo bar,
-	h3.highlight
-		color red
-
-// BAD
-div
-	foo bar  // => foo: bar;
+	p.warning,
 	h3.highlight
 		color red
 ```
+
+仅当确定不会产生歧义或解析错误时，才可以省略逗号：
 
 ```stylus
-// GOOD
+// OK
 div
-	foo > bar,
-	h3.highlight
-		color red
-
-// ERROR (ParseError on Stylus v0.x, maybe accepted on v1.x)
-div
-	foo > bar
+	p.warning
 	h3.highlight
 		color red
 ```
 
-因此，**建议在群组内的多个选择符之间总是写上逗号**。
+> 注：以下情况存在歧义或解析错误：
+
+> ```stylus
+> // BAD
+> div
+> 	foo bar  // => foo: bar;
+> 	h3.highlight
+> 		color red
+> 	
+> // ERROR (ParseError on Stylus v0.x, maybe accepted on v1.x)
+> div
+> 	foo > bar
+> 	h3.highlight
+> 		color red
+> ```
 
 
 ## 变量 <a name="variable">&nbsp;</a>
 
 #### 命名 <a name="variable--naming">&nbsp;</a>
 
-全小写字母，单词之间以连字符分隔。
+变量必须以 `$` 作为前缀。除前缀外，变量名由全小写英文字母和数字组成，且前缀后的第一个字符必须是英文字母；单词之间以连字符分隔。比如：`$color-bg`。
 
-变量必须以 `$` 开头。比如：
-
-```stylus
-$color-bg = white
-```
 #### 作用域 <a name="variable--scope">&nbsp;</a>
 
 变量是有作用域的。
@@ -313,9 +353,21 @@ $color-bg = white
 
 * CMUI 主题层提供的公开的全局变量必须以具备模块特征的前缀开头，比如对 `Baixing` 主题来说，`$bx-color-gray` 就是个不错的变量名。
 
-非公开的变量应该被限定在一定的作用域内（成为局部变量），且建议使用  `$-` 前缀。如果不得不暴露到全局作用域，则**必须**使用 `$-` 前缀，并应该避免过于宽泛的命名（加上模块名作为辅助前缀是个不错的主意，比如 `$-btn-height`）。
+非公开的变量应该被限制在一定的作用域内（成为局部变量），且建议使用  `$-` 前缀：
+
+```stylus
+my-mixin()
+	$-var1 = 10px  // limited in a mixin
+
+#wrapper
+	$-var2 = 20px  // limited in a selector
+```
 
 ## Mixin <a name="mixin">&nbsp;</a>
+
+#### 命名 <a name="mixin--naming">&nbsp;</a>
+
+Mixin 名由全小写英文字母和数字组成，且必须以英文字母开头；单词之间以连字符分隔。比如 `my-mixin()`。
 
 #### 调用 <a name="mixin--invoke">&nbsp;</a>
 
@@ -326,19 +378,57 @@ Mixin 在调用时必须使用括号。比如：
     my-mixin()
 ```
 
-注意：“[透明 mixin](http://stylus-lang.com/#transparent-mixins)” 不在此列，仍以类似属性声明的方式书写。
+（注意：“[透明 mixin](http://stylus-lang.com/#transparent-mixins)” 不在此列，仍以类似属性声明的方式书写。）
 
 #### 参数 <a name="mixin--argument">&nbsp;</a>
 
 Mixin 在定义时，其参数必须以 `$` 开头。
 
+参数名由英文字母和数字组成，采用小驼峰拼写方式。比如 `$myParam`。
+
 #### 作用域 <a name="mixin--scope">&nbsp;</a>
 
 Mixin 是有作用域的。
 
-模块内部使用的 mixin（即不是作为公开 API 存在的 mixin）应该被限定在一定的作用域内（成为局部 mixin），且建议使用 `-` 前缀，比如 `-my-temp-mixin()`。
+作为公开 API 提供的 mixin 必须暴露到全局作用域，即成为全局 mixin。具体实现方法如下：
 
-如果不得不暴露到全局作用域，则**必须**使用 `-` 前缀，并应该避免过于宽泛的命名（加上模块名作为辅助前缀是个不错的主意，比如 `-btn-style()`）。
+```stylus
+// [module.styl]
+my-mixin()
+	color red
+	border 1px solid
+```
+
+```stylus
+// [entry.styl]
+@import './module'  // `my-mixin()` will be a global mixin
+
+another-mixin()  // defined as a global mixin
+	color green
+```
+
+非公开的（即只在内部使用的）mixin 应该被限制在一定的作用域内（成为局部 mixin），且使用 `-` 前缀，比如 `-my-temp-mixin()`。示例如下：
+
+```stylus
+// [entry.styl]
+// BAD
+-icon-size($size = 16px)  // leaked to global scope
+	size $size
+
+.icon
+	-icon-size()
+	&.large
+		-icon-size(32px)
+
+// GOOD
+.icon
+	-icon-size($size = 16px)  // defined as a local mixin
+		size $size
+
+	-icon-size()
+	&.large
+		-icon-size(32px)
+```
 
 #### 接口 <a name="mixin--api">&nbsp;</a>
 
@@ -346,23 +436,23 @@ Mixin 是有作用域的。
 
 ## 函数 <a name="function">&nbsp;</a>
 
+#### 命名 <a name="function--naming">&nbsp;</a>
+
+（参见 [mixin 的命名](#mixin--naming)。）
+
 #### 参数 <a name="function--argument">&nbsp;</a>
 
-函数在定义时，其参数必须以 `$` 开头。
+（参见 [mixin 的参数](#mixin--argument)。）
 
 #### 作用域 <a name="function--scope">&nbsp;</a>
 
-函数是有作用域的。
-
-模块内部使用的函数（即不是作为公开 API 存在的函数）应该被限定在一定的作用域内（成为局部函数），且建议使用 `-` 前缀，比如 `-my-temp-fn()`。
-
-如果不得不暴露到全局作用域，则**必须**使用 `-` 前缀，并应该避免过于宽泛的命名（加上模块名作为辅助前缀是个不错的主意，比如 `-btn-get-type()`）。
+（参见 [mixin 的作用域](#mixin--scope)。）
 
 ***
 
 #### 相关阅读
 
-* [Stylus 官方网站](http://stylus-lang.com/)
+* [Stylus 官方文档](http://stylus-lang.com/)
 
 ***
 
