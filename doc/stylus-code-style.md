@@ -18,6 +18,67 @@ title: "CMUI 之 Stylus 编码规范（草案）"
 
 ## CSS 编码规范 <a name="css-guideline">&nbsp;</a>
 
+#### 选择符 <a name="css-guideline--selector">&nbsp;</a>
+
+* 选择符最末层不应该使用通配选择符（`*`）。
+
+	> Stylint 配置：`{universal: 'never'}`
+
+	```stylus
+	// BAD
+	#wrapper
+		*
+			display block
+
+	// GOOD
+	#wrapper
+		div, p, a, span
+			display block
+	```
+
+#### 值 <a name="css-guideline--value">&nbsp;</a>
+
+* 当值为零时，应省略单位。
+
+	> Stylint 配置：`{zeroUnits: 'never'}`
+
+* `z-index` 的值必须是 10 的倍数。
+
+	> Stylint 配置：`{zIndexNormalize: 10}`
+
+* 尽可能精简那些可以自动展开的属性值：
+
+	> Stylint 配置：`{efficient: 'always'}`
+	
+	```stylus
+	#wrapper
+		margin 0 0  // BAD
+		margin 0 0 0 0  // BAD
+		margin 0  // GOOD
+		border-width 0 20px 0 20px  // BAD
+		border-width 0 20px  // GOOD
+	```
+
+* 小数点前的零不省略：
+
+	> Stylint 配置：`{leadingZero: 'always'}`
+	
+	```stylus
+	#wrapper
+		opacity .5  // BAD
+		opacity 0.5  // GOOD
+	```
+
+* 优先使用 `none` 来关闭边框或描边样式：
+
+	> Stylint 配置：`{none: 'always'}`
+	
+	```stylus
+	#wrapper
+		border 0  // BAD
+		border none  // GOOD
+	```
+
 #### 声明 <a name="css-guideline--declaration">&nbsp;</a>
 
 声明块中的各条声明需要以一定的顺序排列，以便快速浏览和定位。推荐顺序如下：
@@ -30,7 +91,7 @@ title: "CMUI 之 Stylus 编码规范（草案）"
 * 其它样式
 
 ```stylus
-#my-element
+#wrapper
 	// display and layout
 	display block
 	position relative
@@ -46,7 +107,7 @@ title: "CMUI 之 Stylus 编码规范（草案）"
 	height 100px
 	min-width 500px
 	
-	// text and font
+	// text, font and foreground color
 	line-height 1.5
 	font-weight 700
 	color black
@@ -56,9 +117,10 @@ title: "CMUI 之 Stylus 编码规范（草案）"
 	border-right 1px solid green
 	
 	// other
+	cursor pointer
 	animation-name my-anim
+	backface-visibility hidden
 ```
-
 
 #### 其它事项 <a name="css-guideline--other">&nbsp;</a>
 
@@ -67,9 +129,17 @@ title: "CMUI 之 Stylus 编码规范（草案）"
 
 ## 文件系统 <a name="file-system">&nbsp;</a>
 
+#### 文件命名 <a name="file-system--filename">&nbsp;</a>
+
+Stylus 文件的扩展名为 `.styl`。
+
+文件名由小写英文字母和数字组成，且必须以英文字母开头；单词之间以连字符分隔。比如 `text-style.styl`。
+
 #### 字符集 <a name="file-system--charset">&nbsp;</a>
 
 所有 Stylus 文件一律采用 UTF-8 字符集，文件无 BOM 头。
+
+> EditorConfig 配置：`charset = utf-8`
 
 所有 Stylus 文件内部一律不标记 `@charset`。如果页面本身没有采用 UTF-8 字符集，则在引用样式文件时需要在 `<link>` 标签上注明字符集：
 
@@ -77,11 +147,6 @@ title: "CMUI 之 Stylus 编码规范（草案）"
 <link rel="stylesheet" href="cmui.css" charset="utf-8">
 ```
 
-#### 文件命名 <a name="file-system--filename">&nbsp;</a>
-
-Stylus 文件的扩展名为 `.styl`。
-
-文件名由小写英文字母和数字组成，且必须以英文字母开头；单词之间以连字符分隔。比如 `text-style.styl`。
 
 ## 模块 <a name="module">&nbsp;</a>
 
@@ -91,16 +156,16 @@ Stylus 文件的扩展名为 `.styl`。
 
 ```stylus
 // [module.styl]
-// GOOD
-my-mixin()
+// BAD
+#wrapper
 	color red
 	border 1px solid
 ```
 
 ```stylus
 // [module.styl]
-// BAD
-#wrapper
+// GOOD
+my-mixin()
 	color red
 	border 1px solid
 ```
@@ -148,74 +213,109 @@ my-mixin()
 
 ## 代码风格 <a name="code-style">&nbsp;</a>
 
-#### 基本风格 <a name="code-style--basic">&nbsp;</a>
-
-大小写：
+#### 大小写 <a name="code-style--letter-case">&nbsp;</a>
 
 * 所有类型选择符一律小写。
 * 所有属性名和关键字一律小写。
 
 ```stylus
-// GOOD
-div, p, a
-	color red
-
 // BAD
 DIV, P, A
 	COLOR RED
+
+// GOOD
+div, p, a
+	color red
 ```
 
-代码块：
+#### 代码块 <a name="code-style--code-block">&nbsp;</a>
 
 * 每条声明独占一行，行尾不写分号。
+
+	> Stylint 配置：`{stackedProperties: 'never', semicolons: 'never'}`
+
 * 属性名与属性值之间无冒号，只留一个空格。
+
+	> Stylint 配置：`{colons: 'never'}`
+
 * 声明块（以及其它代码块）采用无花括号的风格，一律采用缩进来表示层级关系。
 
-```stylus
-// GOOD
-div
-	border 1px solid
-	a
-		color red
+	> Stylint 配置：`{brackets: 'never'}`
 
-// BAD
-div {
-	border: 1px solid;
-	a {
-		color: red; 
+	```stylus
+	// BAD
+	div {
+		border: 1px solid;
+		a {
+			color: red; 
+		}
 	}
-}
-```
 
-#### 空白符 <a name="code-style--whitespace">&nbsp;</a>
+	// GOOD
+	div
+		border 1px solid
+		a
+			color red
+	```
 
-常规设置：
+#### 缩进 <a name="code-style--indentation">&nbsp;</a>
+
+采用一个 tab。
+
+> Stylint 配置：`{indentPref: false, mixed: true}`
+
+> EditorConfig 配置：`indent_style = tab`
+
+#### 换行符 <a name="code-style--line-feed">&nbsp;</a>
 
 * 换行符采用 `LF`。
-* 缩进采用一个 tab。
 
-关于空格：
+	> EditorConfig 配置：`end_of_line = lf`
+
+* 文件末尾至少要保留一个换行符。
+
+	> EditorConfig 配置：`insert_final_newline = true`
+
+#### 空格 <a name="code-style--space">&nbsp;</a>
+
+* 行末不留空格。
+
+	> Stylint 配置：`{trailingWhitespace: 'never'}`
+	
+	> EditorConfig 配置：`trim_trailing_whitespace = true`
 
 * 括号内侧不加空格。
-* 函数名与调用括号之间不加空格。
-* Mixin 名与调用括号之间不加空格。
 
-```stylus
-// GOOD
-my-mixin(arg)
+	> Stylint 配置：`{parenSpace: 'never'}`
 
-// BAD
-my-mixin ( arg )
-```
+* Mixin 名（以及函数名）与调用括号之间不加空格。
+
+	```stylus
+	// BAD
+	my-mixin ( arg )
+
+	// GOOD
+	my-mixin(arg)
+	```
 
 * 减号的两侧需要用空格间隔，以便与连字符区分（取负运算符同理）：
 
-```stylus
-#wrapper
-	$size = 100px
-	margin-left $size-10  // ERROR
-	margin-left ($size - 10)  // GOOD
-```
+	```stylus
+	#wrapper
+		$size = 100px
+		margin-left $size-10  // ERROR
+		margin-left ($size - 10)  // GOOD
+	```
+
+* 逗号在用作分隔符时，其后必须加一个空格：
+
+	> Stylint 配置：`{commaSpace: 'always'}`
+
+	```stylus
+	#wrapper
+		color rgba(0,0,0,0.5)  // BAD
+		color rgba(0, 0, 0, 0.5)  // GOOD
+	```
 
 #### 括号 <a name="code-style--parenthesis">&nbsp;</a>
 
@@ -235,15 +335,74 @@ my-mixin ( arg )
 
 引号一律使用单引号。
 
+> Stylint 配置：`{quotePref: 'single'}`
+
+> EditorConfig 配置：`quote_type = single` 
+
 写在 `url()` 函数内的 URL 是不需要包一层引号的：
 
 ```stylus
-// GOOD
-background-image url(http://file.baixing.net/logo.png)
-
-// BAD
-background-image url('http://file.baixing.net/logo.png')
+#wrapper
+	background-image url('http://file.baixing.net/logo.png')  // BAD
+	background-image url(http://file.baixing.net/logo.png)  // GOOD
 ```
+
+
+## 注释 <a name="comment">&nbsp;</a>
+
+#### 常规注释 <a name="comment--general">&nbsp;</a>
+
+代码中的常规注释优先选择**单行注释**（`// comment`），而不是原生 CSS 中的多行注释风格（`/* comment */`）。
+
+单行注释的双斜杠之后空一格。
+
+> Stylint 配置：`{commentSpace: 'always'}`
+
+针对代码块的注释独占一行，写在代码块的顶部；针对某个声明（或选择符）的注释写在声明（或选择符）的右侧，与声明之间用一个 tab 间隔（即 Elastic tabstops 风格）。
+
+```stylus
+// comment to a code block
+#wrapper
+	color red
+	
+	// comment to a code block
+	.foo,	// comment to a selector
+	.bar
+		color green
+		border 1px solid	// comment to this declaration
+```
+
+#### 特殊注释 <a name="comment--special">&nbsp;</a>
+
+分隔线是一种特殊的注释，用于把文件划分为多个区段；或者说，它用于把多个代码块分组。分隔线有两种层级，两者的配合使用可以提高代码的组织能力。（尽管分隔线很有用，但我们应该优先通过纵深化的树形结构来体现代码块之间的独立关系。）
+
+区段标记（`/** section mark **/`）是另一种特殊的注释，用于描述各个区段的名称或作用。
+
+分隔线和区段标记的使用示例如下：
+
+```stylus
+/* ============================================= */
+/** icon **/
+.icon
+	...
+/* --------------------------------------------- */
+/** icon size **/
+.icon
+	...
+	&.large
+		...
+	&.small
+		...
+/* --------------------------------------------- */
+/** icon image **/
+...
+
+/* ============================================= */
+/** btn **/
+...
+```
+
+建议在 IDE 或编辑器中将上述特殊注释设置为可以快速输入的代码片断（比如 WebStorm 中的 Live template）。
 
 
 ## 选择符 <a name="selector">&nbsp;</a>
@@ -253,17 +412,17 @@ background-image url('http://file.baixing.net/logo.png')
 尽可能利用选择符嵌套，来把代码归纳为树形结构。
 
 ```stylus
+// BAD
+#wrapper
+	border 1px solid
+#wrapper a
+	color red
+
 // GOOD
-div
+#wrapper
 	border 1px solid
 	a
 		color red
-
-// BAD
-div
-	border 1px solid
-div a
-	color red
 ```
 
 #### 父级引用 <a name="selector--parent-ref">&nbsp;</a>
@@ -271,17 +430,16 @@ div a
 除了类、伪类、伪元素、属性选择符等情况之外，父级引用往往是不需要的，建议精简：
 
 ```stylus
-div
+#wrapper
 	border 1px solid
-
-	// GOOD
-	> a
-		color red
 
 	// BAD
 	& > a
 		color red
 
+	// GOOD
+	> a
+		color red
 ```
 
 #### 群组选择符 <a name="selector--group">&nbsp;</a>
@@ -289,14 +447,14 @@ div
 单纯由类型选择符所构成的群组选择符可以写在一行；但复杂的群组选择符必须分行：
 
 ```stylus
-// OK
-div
-	a, p, span
+// BAD
+#wrapper
+	p.warning, h3.highlight
 		color red
 
-// BAD
-div
-	p.warning, h3.highlight
+// OK
+#wrapper
+	a, p, span
 		color red
 ```
 
@@ -304,7 +462,7 @@ div
 
 ```stylus
 // GOOD
-div
+#wrapper
 	p.warning,
 	h3.highlight
 		color red
@@ -314,7 +472,7 @@ div
 
 ```stylus
 // OK
-div
+#wrapper
 	p.warning
 	h3.highlight
 		color red
@@ -324,13 +482,13 @@ div
 
 > ```stylus
 > // BAD
-> div
+> #wrapper
 > 	foo bar  // => foo: bar;
 > 	h3.highlight
 > 		color red
 > 	
 > // ERROR (ParseError on Stylus v0.x, maybe accepted on v1.x)
-> div
+> #wrapper
 > 	foo > bar
 > 	h3.highlight
 > 		color red
@@ -342,6 +500,8 @@ div
 #### 命名 <a name="variable--naming">&nbsp;</a>
 
 变量必须以 `$` 作为前缀。除前缀外，变量名由全小写英文字母和数字组成，且前缀后的第一个字符必须是英文字母；单词之间以连字符分隔。比如：`$color-bg`。
+
+> Stylint 配置：`{prefixVarsWithDollar: 'always'}`
 
 #### 作用域 <a name="variable--scope">&nbsp;</a>
 
@@ -363,11 +523,38 @@ my-mixin()
 	$-var2 = 20px  // limited in a selector
 ```
 
+
 ## Mixin <a name="mixin">&nbsp;</a>
 
 #### 命名 <a name="mixin--naming">&nbsp;</a>
 
 Mixin 名由全小写英文字母和数字组成，且必须以英文字母开头；单词之间以连字符分隔。比如 `my-mixin()`。
+
+#### 定义 <a name="mixin--define">&nbsp;</a>
+
+Mixin 内部的选择符**不写**不必要的父级引用：
+
+```stylus
+// BAD
+my-mixin()
+	// unnecessary
+	&
+		color red
+	// unnecessary
+	& .foo
+		color green
+	// Note: this parent reference is necessary
+	&.bar
+		color yellow
+
+// GOOD
+my-mixin()
+	color red
+	.foo
+		color green
+	&.bar
+		color yellow
+```
 
 #### 调用 <a name="mixin--invoke">&nbsp;</a>
 
@@ -375,10 +562,27 @@ Mixin 在调用时必须使用括号。比如：
 
 ```stylus
 .foo
-    my-mixin()
+	my-mixin()
 ```
 
 （注意：“[透明 mixin](http://stylus-lang.com/#transparent-mixins)” 不在此列，仍以类似属性声明的方式书写。）
+
+Mixin 在调用时必须位于代码块的最顶部：
+
+```stylus
+my-mixin()
+	color red
+
+// BAD
+.bar
+	font-weight bold
+	my-mixin()
+	
+// GOOD
+.foo
+	my-mixin()
+	font-weight bold
+```
 
 #### 参数 <a name="mixin--argument">&nbsp;</a>
 
@@ -434,6 +638,7 @@ another-mixin()  // defined as a global mixin
 
 如果某个 mixin 的作用等同于某个作为公开 API 存在的类名，则应该与该类名同名，比如用 `cmBtn()` 对应 `.cmBtn`。
 
+
 ## 函数 <a name="function">&nbsp;</a>
 
 #### 命名 <a name="function--naming">&nbsp;</a>
@@ -447,6 +652,123 @@ another-mixin()  // defined as a global mixin
 #### 作用域 <a name="function--scope">&nbsp;</a>
 
 （参见 [mixin 的作用域](#mixin--scope)。）
+
+
+## 不建议使用的功能 <a name="deprecated">&nbsp;</a>
+
+#### Extend <a name="deprecated--extend">&nbsp;</a>
+
+Extend 功能会重新组织代码顺序，可能会导致无法预料的结果。因此禁用此功能，改用 mixin 来实现类似的代码组织功能：
+
+```stylus
+// BAD
+.class-a
+	font-weight bold
+	...
+.class-b
+	@extend .class-a
+	color green
+	...
+
+// OK
+.class-a,
+.class-b
+	font-weight bold
+	...
+.class-b
+	color green
+	...
+
+// GOOD
+my-mixin()
+	font-weight bold
+	...
+.class-a
+	my-mixin()
+.class-b
+	my-mixin()
+	color green
+	...
+```
+
+在上面的示例中，第一段代码使用了 extend 功能，最终生成的 CSS 代码量较少；第二段代码生成的结果与第一段相同，相当于通过人工预先归并代码的方式来减少冗余度，但不易阅读和维护；第三段代码最为清晰，但生成的代码存在冗余部分。
+
+最终，我们选择第三种方式，因为代码冗余会在 Gzip 阶段消化掉，而代码的可维护性永远是第一位的。
+
+#### Placeholder <a name="deprecated--placeholder">&nbsp;</a>
+
+Placeholder 并不是一个独立的功能，它实际上是 extend 的一种高级应用形式。基于相同的原因，禁用此功能，改用 mixin 来实现类似的代码组织功能：
+
+```stylus
+// BAD
+$my-placeholder
+	font-weight bold
+	...
+.class-a
+	@extend $my-placeholder
+.class-b
+	@extend $my-placeholder
+	color green
+	...
+
+// GOOD
+my-mixin()
+	font-weight bold
+	...
+.class-a
+	my-mixin()
+.class-b
+	my-mixin()
+	color green
+	...
+```
+
+
+#### Block
+
+Block 所能提供的功能是 mixin 的子集，没有额外优点。为降低复杂度，禁用此功能。
+
+```stylus
+// BAD
+my-block =
+	font-weight bold
+
+#wrapper
+	{my-block}
+
+// GOOD
+my-mixin()
+	font-weight bold
+
+#wrapper
+	my-mixin()
+```
+
+#### CSS Literal <a name="deprecated--css-literal">&nbsp;</a>
+
+即 CSS 字面量，由 `@css` 代码块来定义，其内部代码不会被 Stylus 引擎处理，只会原样输出。实际开发中暂未发现必须使用此功能的场景，为降低复杂度，禁用此功能。
+
+> Stylint 配置：`{cssLiteral: 'never'}`
+
+如果存在大段遗留的 CSS 代码需要整合到 Stylus 文件中，建议先将 CSS 文件转换为 Stylus 文件（以下操作会在当前目录下得到 `foo.styl` 文件）：
+
+```sh
+$ stylus -C foo.css
+```
+
+
+## 其它 <a name="other">&nbsp;</a>
+
+#### 其它 Stylint 配置 <a name="other--stylint-config">&nbsp;</a>
+
+* `{valid: true}` - 属性名、值、选择符必须是有效值。
+* `{mixins: ['...', '...']}` - 指定自定义的透明 mixin。
+
+#### 代码压缩 <a name="other--minify">&nbsp;</a>
+
+静态资源服务器在响应所有 CSS 文件时必须做 Gzip 压缩。
+
+由于风险太大，收益不高，放弃任何形式的 “CSS 代码高级压缩” 功能，包含规则合并、声明去重等等。
 
 ***
 
