@@ -16,9 +16,9 @@ title: "CMUI 之 Stylus 编码规范（草案）"
 可以将 CMUI 各主题的 `index.styl` 文件视为入口文件，也可以视为模块文件（由众多小模块构成的大模块）。这完全取决于使用者是直接使用编译好的 `dist/*.css` 文件，还是以引用模块的方式来使用各主题的 `index.styl` 文件。（百姓网手机站采用的是后一种方式。）
 
 
-## CSS 编码规范 <a name="css-guideline">&nbsp;</a>
+## CSS 编码规范 <a name="css">&nbsp;</a>
 
-#### 选择符 <a name="css-guideline--selector">&nbsp;</a>
+#### 选择符 <a name="css--selector">&nbsp;</a>
 
 * 选择符最末层不应该使用通配选择符（`*`）。
 
@@ -36,9 +36,9 @@ title: "CMUI 之 Stylus 编码规范（草案）"
 			display block
 	```
 
-#### 值 <a name="css-guideline--value">&nbsp;</a>
+#### 值 <a name="css--value">&nbsp;</a>
 
-* 当值为零时，应省略单位。
+* 当**长度值**为零时，应省略单位。
 
 	> Stylint 配置：`{zeroUnits: 'never'}`
 
@@ -79,7 +79,7 @@ title: "CMUI 之 Stylus 编码规范（草案）"
 		border none  // GOOD
 	```
 
-#### 声明 <a name="css-guideline--declaration">&nbsp;</a>
+#### 声明 <a name="css--declaration">&nbsp;</a>
 
 声明块中的各条声明需要以一定的顺序排列，以便快速浏览和定位。推荐顺序如下：
 
@@ -122,7 +122,7 @@ title: "CMUI 之 Stylus 编码规范（草案）"
 	backface-visibility hidden
 ```
 
-#### 其它事项 <a name="css-guideline--other">&nbsp;</a>
+#### 其它事项 <a name="css--other">&nbsp;</a>
 
 （关于 CSS 的各种最佳实践，请参阅[《CSS 编码技巧 · CSS Secrets》](https://github.com/cssmagic/CSS-Secrets/issues/8)。）
 
@@ -260,11 +260,11 @@ div, p, a
 
 #### 缩进 <a name="code-style--indentation">&nbsp;</a>
 
-采用一个 tab。
+* 采用一个 tab。
 
-> Stylint 配置：`{indentPref: false, mixed: true}`
+	> Stylint 配置：`{indentPref: false, mixed: true}`
 
-> EditorConfig 配置：`indent_style = tab`
+	> EditorConfig 配置：`indent_style = tab`
 
 #### 换行符 <a name="code-style--line-feed">&nbsp;</a>
 
@@ -513,7 +513,7 @@ div, p, a
 
 * CMUI 主题层提供的公开的全局变量必须以具备模块特征的前缀开头，比如对 `Baixing` 主题来说，`$bx-color-gray` 就是个不错的变量名。
 
-非公开的变量应该被限制在一定的作用域内（成为局部变量），且建议使用  `$-` 前缀：
+非公开的变量应该被限制在一定的作用域内（成为局部变量），且建议使用 `$-` 前缀：
 
 ```stylus
 my-mixin()
@@ -521,6 +521,18 @@ my-mixin()
 
 #wrapper
 	$-var2 = 20px  // limited in a selector
+```
+
+如果某个变量不属于公开 API，但由于需要被多个根级代码块共享而不得不暴露到全局作用域，则**必须**使用 `$-` 前缀：
+
+```stylus
+$-shared-var = 10px
+
+my-mixin()
+	size $-shared-var
+
+another-mixin()
+	line-height $-shared-var
 ```
 
 
@@ -567,7 +579,7 @@ Mixin 在调用时必须使用括号。比如：
 
 （注意：“[透明 mixin](http://stylus-lang.com/#transparent-mixins)” 不在此列，仍以类似属性声明的方式书写。）
 
-Mixin 在调用时必须位于代码块的最顶部：
+Mixin 在调用时必须位于当前代码块的最顶部：
 
 ```stylus
 my-mixin()
@@ -611,7 +623,7 @@ another-mixin()  // defined as a global mixin
 	color green
 ```
 
-非公开的（即只在内部使用的）mixin 应该被限制在一定的作用域内（成为局部 mixin），且使用 `-` 前缀，比如 `-my-temp-mixin()`。示例如下：
+非公开的（即只在内部使用的）mixin 应该被限制在一定的作用域内（成为局部 mixin），且建议使用 `-` 前缀：
 
 ```stylus
 // [entry.styl]
@@ -626,13 +638,16 @@ another-mixin()  // defined as a global mixin
 
 // GOOD
 .icon
-	-icon-size($size = 16px)  // defined as a local mixin
+	-icon-size($size = 16px)  // defined in local scope
 		size $size
 
 	-icon-size()
 	&.large
 		-icon-size(32px)
 ```
+
+如果某个 mixin 不属于公开 API，但由于需要被多个根级代码块共享而不得不暴露到全局作用域，则**必须**使用 `-` 前缀。
+
 
 #### 接口 <a name="mixin--api">&nbsp;</a>
 
@@ -764,11 +779,11 @@ $ stylus -C foo.css
 * `{valid: true}` - 属性名、值、选择符必须是有效值。
 * `{mixins: ['...', '...']}` - 指定自定义的透明 mixin。
 
-#### 代码压缩 <a name="other--minify">&nbsp;</a>
+#### 代码压缩 <a name="other--compression">&nbsp;</a>
 
 静态资源服务器在响应所有 CSS 文件时必须做 Gzip 压缩。
 
-由于风险太大，收益不高，放弃任何形式的 “CSS 代码高级压缩” 功能，包含规则合并、声明去重等等。
+由于风险太大，收益不高，在 minify 阶段放弃任何形式的 “CSS 代码高级压缩” 功能，包含规则合并、声明去重等等。
 
 ***
 
