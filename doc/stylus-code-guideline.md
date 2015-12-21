@@ -779,11 +779,27 @@ $ stylus -C foo.css
 * `{valid: true}` - 属性名、值、选择符必须是有效值。
 * `{mixins: ['...', '...']}` - 指定自定义的透明 mixin。
 
-#### 代码压缩 <a name="other--compression">&nbsp;</a>
+#### 浏览器前缀 <a name="other--vendor-prefix">&nbsp;</a>
 
-静态资源服务器在响应所有 CSS 文件时必须做 Gzip 压缩。
+在源码中不书写任何浏览器前缀，只书写标准的 CSS 属性名或属性值。加前缀的事情由 nib 或 Autoprefixer 来自动完成。
 
-由于风险太大，收益不高，在 minify 阶段放弃任何形式的 “CSS 代码高级压缩” 功能，包含规则合并、声明去重等等。
+```stylus
+// BAD
+.foo
+	-webkit-box-sizing border-box
+	-moz-box-sizing border-box
+	box-sizing border-box
+
+// GOOD
+.foo
+	box-sizing border-box
+```
+
+#### 压缩 <a name="other--compression">&nbsp;</a>
+
+* 由于风险太大，收益不高，在 minify 阶段放弃任何形式的 “CSS 代码高级压缩” 功能，包含规则合并、声明去重等等。
+
+* 静态资源服务器在响应所有 CSS 文件时必须做 Gzip 压缩。
 
 ***
 
