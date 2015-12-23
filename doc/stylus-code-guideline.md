@@ -69,16 +69,6 @@ title: "CMUI 之 Stylus 编码规范（草案）"
 		opacity 0.5  // GOOD
 	```
 
-* 优先使用 `none` 来关闭边框或描边样式：
-
-	> Stylint 配置：`{none: 'always'}`
-	
-	```stylus
-	#wrapper
-		border 0  // BAD
-		border none  // GOOD
-	```
-
 #### 声明 <a name="css--declaration">&nbsp;</a>
 
 声明块中的各条声明需要以一定的顺序排列，以便快速浏览和定位。推荐顺序如下：
@@ -303,7 +293,7 @@ div, p, a
 	```stylus
 	#wrapper
 		$size = 100px
-		margin-left $size-10  // ERROR
+		margin-left $size-10  // WRONG RESULT
 		margin-left ($size - 10)  // GOOD
 	```
 
@@ -327,7 +317,7 @@ div, p, a
 	margin-left - $size * 0.5  // BAD
 	margin-left (- $size * 0.5)  // GOOD
 	
-	padding-left $size / 0.5  // BAD
+	padding-left $size / 0.5  // WRONG RESULT
 	padding-left ($size / 0.5)  // GOOD
 ```
 
@@ -481,9 +471,9 @@ div, p, a
 > 注：以下情况存在歧义或解析错误：
 
 > ```stylus
-> // BAD
+> // WRONG RESULT
 > #wrapper
-> 	foo bar  // => foo: bar;
+> 	div strong  // => div: strong;
 > 	h3.highlight
 > 		color red
 > 	
@@ -778,6 +768,7 @@ $ stylus -C foo.css
 
 * `{valid: true}` - 属性名、值、选择符必须是有效值。
 * `{mixins: ['...', '...']}` - 指定自定义的透明 mixin。
+* `{none: false}` - 不强制是否使用 `none` 来关闭边框或描边样式（即 `border 0` 和 `border none ` 均可）。
 
 #### 浏览器前缀 <a name="other--vendor-prefix">&nbsp;</a>
 
