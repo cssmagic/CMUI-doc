@@ -20,7 +20,7 @@ title: "CMUI 之 Stylus 编码规范（草案）"
 
 #### 选择符 <a name="css--selector">&nbsp;</a>
 
-* 选择符最末层不应该使用通配选择符（`*`）。
+* [强制] 选择符最末层不应该使用通配选择符（`*`）。
 
 	> Stylint 配置：`{universal: 'never'}`
 
@@ -38,15 +38,15 @@ title: "CMUI 之 Stylus 编码规范（草案）"
 
 #### 值 <a name="css--value">&nbsp;</a>
 
-* 当**长度值**为零时，应省略单位。
+* [强制] 当**长度值**为零时，应省略单位。
 
 	> Stylint 配置：`{zeroUnits: 'never'}`
 
-* `z-index` 的值必须是 10 的倍数。
+* [强制] `z-index` 的值必须是 10 的倍数。
 
 	> Stylint 配置：`{zIndexNormalize: 10}`
 
-* 尽可能精简那些可以自动展开的属性值：
+* [强制] 尽可能精简那些可以自动展开的属性值：
 
 	> Stylint 配置：`{efficient: 'always'}`
 	
@@ -59,7 +59,7 @@ title: "CMUI 之 Stylus 编码规范（草案）"
 		border-width 0 20px  // GOOD
 	```
 
-* 小数点前的零不省略：
+* [强制] 小数点前的零不省略：
 
 	> Stylint 配置：`{leadingZero: 'always'}`
 	
@@ -71,7 +71,7 @@ title: "CMUI 之 Stylus 编码规范（草案）"
 
 #### 声明 <a name="css--declaration">&nbsp;</a>
 
-声明块中的各条声明需要以一定的顺序排列，以便快速浏览和定位。推荐顺序如下：
+[推荐] 声明块中的各条声明需要以一定的顺序排列，以便快速浏览和定位。推荐顺序如下：
 
 * 显示方式与布局方式
 * 外边距与内边距
@@ -121,21 +121,23 @@ title: "CMUI 之 Stylus 编码规范（草案）"
 
 #### 文件命名 <a name="file-system--filename">&nbsp;</a>
 
-Stylus 文件的扩展名为 `.styl`。
+* [强制] Stylus 文件的扩展名为 `.styl`。
 
-文件名由小写英文字母和数字组成，且必须以英文字母开头；单词之间以连字符分隔。比如 `text-style.styl`。
+* [强制] 文件名由小写英文字母和数字组成，且必须以英文字母开头；单词之间以连字符分隔。比如 `text-style.styl`。
 
 #### 字符集 <a name="file-system--charset">&nbsp;</a>
 
-所有 Stylus 文件一律采用 UTF-8 字符集，文件无 BOM 头。
+* [强制] 所有 Stylus 文件一律采用 UTF-8 字符集，文件无 BOM 头。
 
-> EditorConfig 配置：`charset = utf-8`
+	> EditorConfig 配置：`charset = utf-8`
 
-所有 Stylus 文件内部一律不标记 `@charset`。如果页面本身没有采用 UTF-8 字符集，则在引用样式文件时需要在 `<link>` 标签上注明字符集：
+* [强制] 所有 Stylus 文件内部一律不标记 `@charset`。
 
-```html
-<link rel="stylesheet" href="cmui.css" charset="utf-8">
-```
+	如果页面本身没有采用 UTF-8 字符集，则在引用样式文件时需要在 `<link>` 标签上注明字符集：
+
+	```html
+	<link rel="stylesheet" href="cmui.css" charset="utf-8">
+	```
 
 
 ## 模块 <a name="module">&nbsp;</a>
@@ -192,7 +194,7 @@ my-mixin()
 
 #### 模块的导入 <a name="module--import">&nbsp;</a>
 
-仅使用 `@import` 来导入模块，不使用 `@require`。
+[强制] 仅使用 `@import` 来导入模块，不使用 `@require`。
 
 模块的路径与文件名需要用引号包住。文件路径总是以 `./` 开头，文件名不需要包含 `.styl` 扩展名：
 
@@ -205,8 +207,8 @@ my-mixin()
 
 #### 大小写 <a name="code-style--letter-case">&nbsp;</a>
 
-* 所有类型选择符一律小写。
-* 所有属性名和关键字一律小写。
+* [强制] 所有类型选择符一律小写。
+* [强制] 所有属性名和关键字一律小写。
 
 ```stylus
 // BAD
@@ -220,15 +222,15 @@ div, p, a
 
 #### 代码块 <a name="code-style--code-block">&nbsp;</a>
 
-* 每条声明独占一行，行尾不写分号。
+* [强制] 每条声明独占一行，行尾不写分号。
 
 	> Stylint 配置：`{stackedProperties: 'never', semicolons: 'never'}`
 
-* 属性名与属性值之间无冒号，只留一个空格。
+* [强制] 属性名与属性值之间无冒号，只留一个空格。
 
 	> Stylint 配置：`{colons: 'never'}`
 
-* 声明块（以及其它代码块）采用无花括号的风格，一律采用缩进来表示层级关系。
+* [强制] 声明块（以及其它代码块）采用无花括号的风格，一律采用缩进来表示层级关系。
 
 	> Stylint 配置：`{brackets: 'never'}`
 
@@ -250,7 +252,7 @@ div, p, a
 
 #### 缩进 <a name="code-style--indentation">&nbsp;</a>
 
-* 采用一个 tab。
+* [强制] 采用一个 tab。
 
 	> Stylint 配置：`{indentPref: false, mixed: true}`
 
@@ -258,27 +260,27 @@ div, p, a
 
 #### 换行符 <a name="code-style--line-feed">&nbsp;</a>
 
-* 换行符采用 `LF`。
+* [强制] 换行符采用 `LF`。
 
 	> EditorConfig 配置：`end_of_line = lf`
 
-* 文件末尾至少要保留一个换行符。
+* [强制] 文件末尾至少要保留一个换行符。
 
 	> EditorConfig 配置：`insert_final_newline = true`
 
 #### 空格 <a name="code-style--space">&nbsp;</a>
 
-* 行末不留空格。
+* [强制] 行末不留空格。
 
 	> Stylint 配置：`{trailingWhitespace: 'never'}`
 	
 	> EditorConfig 配置：`trim_trailing_whitespace = true`
 
-* 括号内侧不加空格。
+* [强制] 括号内侧不加空格。
 
 	> Stylint 配置：`{parenSpace: 'never'}`
 
-* Mixin 名（以及函数名）与调用括号之间不加空格。
+* [强制] Mixin 名（以及函数名）与调用括号之间不加空格。
 
 	```stylus
 	// BAD
@@ -288,7 +290,7 @@ div, p, a
 	my-mixin(arg)
 	```
 
-* 减号的两侧需要用空格间隔，以便与连字符区分（取负运算符同理）：
+* [强制] 减号的两侧需要用空格间隔，以便与连字符区分（取负运算符同理）：
 
 	```stylus
 	#wrapper
@@ -297,7 +299,7 @@ div, p, a
 		margin-left ($size - 10)  // GOOD
 	```
 
-* 逗号在用作分隔符时，其后必须加一个空格：
+* [强制] 逗号在用作分隔符时，其后必须加一个空格：
 
 	> Stylint 配置：`{commaSpace: 'always'}`
 
@@ -323,28 +325,28 @@ div, p, a
 
 #### 其它字符 <a name="code-style--other-char">&nbsp;</a>
 
-引号一律使用单引号。
+* [强制] 引号一律使用单引号。
 
-> Stylint 配置：`{quotePref: 'single'}`
+	> Stylint 配置：`{quotePref: 'single'}`
 
-> EditorConfig 配置：`quote_type = single` 
+	> EditorConfig 配置：`quote_type = single` 
 
-写在 `url()` 函数内的 URL 是不需要包一层引号的：
+* [推荐] 写在 `url()` 函数内的 URL 是不需要包一层引号的：
 
-```stylus
-#wrapper
-	background-image url('http://file.baixing.net/logo.png')  // BAD
-	background-image url(http://file.baixing.net/logo.png)  // GOOD
-```
+	```stylus
+	#wrapper
+		background-image url('http://file.baixing.net/logo.png')  // BAD
+		background-image url(http://file.baixing.net/logo.png)  // GOOD
+	```
 
 
 ## 注释 <a name="comment">&nbsp;</a>
 
 #### 常规注释 <a name="comment--general">&nbsp;</a>
 
-代码中的常规注释优先选择**单行注释**（`// comment`），而不是原生 CSS 中的多行注释风格（`/* comment */`）。
+[推荐] 代码中的常规注释优先选择**单行注释**（`// comment`），而不是原生 CSS 中的多行注释风格（`/* comment */`）。
 
-单行注释的双斜杠之后空一格。
+[强制] 单行注释的双斜杠之后空一格。
 
 > Stylint 配置：`{commentSpace: 'always'}`
 
@@ -489,7 +491,9 @@ div, p, a
 
 #### 命名 <a name="variable--naming">&nbsp;</a>
 
-变量必须以 `$` 作为前缀。除前缀外，变量名由全小写英文字母和数字组成，且前缀后的第一个字符必须是英文字母；单词之间以连字符分隔。比如：`$color-bg`。
+[强制] 变量必须以 `$` 作为前缀。
+
+除前缀外，变量名由全小写英文字母和数字组成，且前缀后的第一个字符必须是英文字母；单词之间以连字符分隔。比如：`$color-bg`。
 
 > Stylint 配置：`{prefixVarsWithDollar: 'always'}`
 
@@ -590,7 +594,7 @@ my-mixin()
 
 Mixin 在定义时，其参数必须以 `$` 开头。
 
-参数名由英文字母和数字组成，采用小驼峰拼写方式。比如 `$myParam`。
+除前缀外，参数名由英文字母和数字组成，采用小驼峰拼写方式。比如 `$myParam`。
 
 #### 作用域 <a name="mixin--scope">&nbsp;</a>
 
@@ -769,6 +773,12 @@ $ stylus -C foo.css
 * `{valid: true}` - 属性名、值、选择符必须是有效值。
 * `{mixins: ['...', '...']}` - 指定自定义的透明 mixin。
 * `{none: false}` - 不强制是否使用 `none` 来关闭边框或描边样式（即 `border 0` 和 `border none ` 均可）。
+* `{depthLimit: false}` - 不限制选择符的嵌套层数。
+* `{duplicates: false, globalDupe: false}` - 不检查声明与规则的重复情况。
+* `{maxErrors: false, maxWarnings: false}` - 输出所有校验结果。
+* `{namingConvention: false, namingConventionStrict: false}` - Stylint 的变量命名检测功能粒度过大，暂时关闭之。
+* `{extendPref: false, placeholder: false, blocks: false}` - 禁用 Extend 和 Block 相关功能，因此关闭这些选项。
+* `{sortOrder: false}` - 这个选项用于校验声明的顺序，但由于我们很难罗列出所有属性，暂时关闭之。
 
 #### 浏览器前缀 <a name="other--vendor-prefix">&nbsp;</a>
 
