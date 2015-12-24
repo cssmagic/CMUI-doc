@@ -497,6 +497,23 @@ div, p, a
 
 > Stylint 配置：`{prefixVarsWithDollar: 'always'}`
 
+#### 定义 <a name="variable--define">&nbsp;</a>
+
+每个变量在定义时应该总是独占一行，禁用内联定义的方式。
+
+```stylus
+// BAD
+#wrapper
+	height $-h = 20px
+	line-height $-h
+
+// GOOD
+#wrapper
+	$-h = 20px
+	height $-h
+	line-height $-h
+```
+
 #### 作用域 <a name="variable--scope">&nbsp;</a>
 
 变量是有作用域的。
@@ -763,6 +780,23 @@ my-mixin()
 
 ```sh
 $ stylus -C foo.css
+```
+
+#### 属性值引用 <a name="deprecated--property-lookup">&nbsp;</a>
+
+这是 Stylus 标榜的独有功能，但实践中发现它对代码质量并没有帮助。为降低复杂度，禁用此功能。应该总是使用变量来实现类似的功能。
+
+```stylus
+// BAD
+#wrapper
+	height 20px
+	line-height @height
+
+// GOOD
+#wrapper
+	$-h = 20px
+	height $-h
+	line-height $-h
 ```
 
 
