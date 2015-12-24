@@ -42,7 +42,7 @@ title: "CMUI 之 Stylus 编码规范（草案）"
 
 	> Stylint 配置：`{zeroUnits: 'never'}`
 
-* [强制] `z-index` 的值必须是 10 的倍数。
+* [推荐] `z-index` 的值取 10 的倍数。
 
 	> Stylint 配置：`{zIndexNormalize: 10}`
 
@@ -804,14 +804,14 @@ $ stylus -C foo.css
 
 #### 其它 Stylint 配置 <a name="other--stylint-config">&nbsp;</a>
 
-* `{valid: true}` - 属性名、值、选择符必须是有效值。
+* `{valid: true}` - 属性名、属性值、选择符必须是有效值。
 * `{mixins: ['...', '...']}` - 指定自定义的透明 mixin。
 * `{none: false}` - 不强制是否使用 `none` 来关闭边框或描边样式（即 `border 0` 和 `border none ` 均可）。
 * `{depthLimit: false}` - 不限制选择符的嵌套层数。
 * `{duplicates: false, globalDupe: false}` - 不检查声明与规则的重复情况。
 * `{maxErrors: false, maxWarnings: false}` - 输出所有校验结果。
 * `{namingConvention: false, namingConventionStrict: false}` - Stylint 的变量命名检测功能粒度过大，暂时关闭之。
-* `{extendPref: false, placeholder: false, blocks: false}` - 禁用 Extend 和 Block 相关功能，因此关闭这些选项。
+* `{extendPref: false, placeholder: false, blocks: false}` - 已禁用 Extend 和 Block 相关功能，因此关闭这些选项。
 * `{sortOrder: false}` - 这个选项用于校验声明的顺序，但由于我们很难罗列出所有属性，暂时关闭之。
 
 #### 浏览器前缀 <a name="other--vendor-prefix">&nbsp;</a>
